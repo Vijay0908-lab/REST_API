@@ -26,5 +26,5 @@ router.put(
   ],
   feedController.updatePost,
 );
-
+router.delete("/post/:proId", feedController.deletePost);
 module.exports = router;

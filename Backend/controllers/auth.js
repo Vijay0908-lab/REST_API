@@ -35,13 +35,13 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-  const email = req.body.email;
+  const email = req.body.email.toLowerCase();
   const password = req.body.password;
   let loadedUser;
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
-        const error = new Error("A user with this could not be fiund");
+        const error = new Error("A user with this could not be found");
         error.statusCode = 401;
         throw error;
       }

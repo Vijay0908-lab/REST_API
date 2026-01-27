@@ -4,6 +4,8 @@ const path = require("path");
 const { validationResult } = require("express-validator");
 const Post = require("../model/post");
 const User = require("../model/user");
+const io = require("../socket");
+
 exports.getPosts = async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = 2;
@@ -11,6 +13,7 @@ exports.getPosts = async (req, res, next) => {
   try {
     const totalItems = await Post.find().countDocuments();
     const posts = await Post.find()
+      .populate("creator", "name")
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
 
@@ -54,7 +57,7 @@ exports.createPost = async (req, res, next) => {
   const imageUrl = req.file.path;
   const title = req.body.title;
   const content = req.body.content;
-  let creator;
+
   const post = new Post({
     title: title,
     content: content,
@@ -67,7 +70,13 @@ exports.createPost = async (req, res, next) => {
     user.posts.push(post);
     await user.save();
 
-    console.log(user);
+    io.getIo().emit("posts", {
+      action: "create",
+      post: {
+        ...post._doc,
+        creator: { _id: user._id, name: user.name },
+      },
+    });
     res.status(201).json({
       message: "Post created successfully!",
       post: post,

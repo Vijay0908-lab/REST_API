@@ -176,7 +176,7 @@ exports.deletePost = async (req, res, next) => {
     console.log("printing the post ", post);
     if (!post) {
       const error = new Error("Could not find post");
-      error.statusCode = 404;
+      error.statusCode = 403;
       throw error;
     }
 

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -14,7 +15,10 @@ const fileStorage = multer.diskStorage({
     cb(null, "images");
   },
   filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + "-" + file.originalname);
+    cb(
+      null,
+      new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname,
+    );
   },
 });
 
@@ -59,11 +63,9 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 mongoose
-  .connect(
-    "mongodb+srv://Vijay4944:Vijay4944@cluster0.9u1hgcw.mongodb.net/messages?appName=Cluster0",
-  )
+  .connect(process.env.MONGO_URL)
   .then((result) => {
-    const server = app.listen(8080);
+    const server = app.listen(process.env.PORT || 8080);
     const io = require("./socket").init(server);
     io.on("connection", (socket) => {
       console.log("client connected");

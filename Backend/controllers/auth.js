@@ -63,11 +63,19 @@ exports.login = async (req, res, next) => {
       },
     );
     res.status(200).json({ token: token, userId: loadedUser._id.toString() });
+
+    //the only purpose for adding the return in this async function is only because we are using the test for this function or else without this return also it will works totally fine
+
+    return;
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
     next(err);
+
+    //the only purpose for adding the return in this async function is only because we are using the test for this function or else without this return also it will works totally fine
+
+    return err;
   }
 };
 
